@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+</head>
+
+<body>
+    <div style="width: 50%;margin:0 auto;text-align:center">
+        <div id="chartContainer" style="height:330px"></div>
+        <hr />
+        <button onclick="sendData('male');">Saya Laki-Laki</button>
+        <button onclick="sendData('female');">Saya Perempuan</button>
+    </div>
+    <script type="text/javascript">
+        var chart = new CanvasJS.Chart("chartContainer");//CanvasJs
+        var conn = new WebSocket('ws://localhost:8080');//Websocket
+        conn.onopen = function (e) {
+            console.log("Connection established!");
+            conn.send("");
+        };
+        conn.onmessage = function (e) {
+            var obj = JSON.parse(e.data);
+            console.log(obj);
+            var male = obj.male;
+            var female = obj.female;
+            chart.options = {
+                title: { text: "Jumlah Laki-Laki Dan Perempuan" },
+                data: [{ dataPoints: [{ label: "Laki-laki", y: male }, { label: "Perempuan", y: female }] }]
+            };
+            chart.render();
+        };
+        function sendData(data) { conn.send(data); }
+    </script>
+</body>
+
+</html>
